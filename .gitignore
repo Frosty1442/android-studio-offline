@@ -1,0 +1,39 @@
+# Android Studio Offline Installer - .gitignore
+
+# Downloaded files (too large for git)
+downloads/
+packages/
+
+# Configuration files (created from templates)
+config/download.config
+
+# Build artifacts
+*.tar.gz
+*.zip
+*.dmg
+*.exe
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Backup files
+*.backup
+*.bak
+*~
+
+# System files
+.directory
+
+# Test files
+test-output/

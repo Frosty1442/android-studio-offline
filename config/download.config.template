@@ -1,0 +1,100 @@
+# Android Studio Offline Installer Configuration
+# Copy this file to download.config and customize for your needs
+
+# =============================================================================
+# ANDROID STUDIO
+# =============================================================================
+# Version: Check https://developer.android.com/studio for latest
+ANDROID_STUDIO_VERSION="2023.3.1.18"
+# Platform: linux, mac, mac_arm, windows
+PLATFORM="linux"
+
+# =============================================================================
+# JDK (Java Development Kit)
+# =============================================================================
+# Android Studio bundles JDK, but you may want a standalone version
+DOWNLOAD_JDK="true"
+JDK_VERSION="17"  # Android Studio recommends JDK 17
+
+# =============================================================================
+# ANDROID SDK
+# =============================================================================
+# SDK Command Line Tools version
+SDK_TOOLS_VERSION="11076708"  # Latest as of 2024
+
+# Android API Levels to download (space-separated)
+# Example: "30 31 32 33 34"
+API_LEVELS="33 34"
+
+# Build Tools versions (space-separated)
+BUILD_TOOLS_VERSIONS="33.0.2 34.0.0"
+
+# System Images for Emulator (space-separated)
+# Format: "system-images;android-API;VARIANT;ABI"
+# Variants: google_apis, google_apis_playstore, default
+# ABIs: x86_64, arm64-v8a
+SYSTEM_IMAGES="system-images;android-33;google_apis;x86_64 system-images;android-34;google_apis;x86_64"
+
+# Additional SDK Packages
+DOWNLOAD_CMAKE="true"
+DOWNLOAD_NDK="true"
+NDK_VERSION="25.2.9519653"
+
+# Google Play Services and Extras
+DOWNLOAD_GOOGLE_PLAY_SERVICES="true"
+DOWNLOAD_GOOGLE_REPOS="true"
+
+# =============================================================================
+# GRADLE
+# =============================================================================
+# Gradle versions to download (space-separated)
+# Include versions your projects use
+GRADLE_VERSIONS="7.6 8.0 8.1 8.2 8.4"
+
+# Download Gradle wrapper
+DOWNLOAD_GRADLE_WRAPPER="true"
+
+# =============================================================================
+# MAVEN DEPENDENCIES
+# =============================================================================
+# Download common Maven dependencies
+DOWNLOAD_MAVEN_DEPS="true"
+
+# Sample project for dependency collection (optional)
+# If you have a sample project, place it in downloads/sample-project/
+# and dependencies will be pre-downloaded
+SAMPLE_PROJECT_PATH=""
+
+# =============================================================================
+# ADDITIONAL COMPONENTS
+# =============================================================================
+# Download Android platform tools separately
+DOWNLOAD_PLATFORM_TOOLS="true"
+
+# Download SDK manager
+DOWNLOAD_SDK_MANAGER="true"
+
+# Download common support libraries
+DOWNLOAD_ANDROIDX="true"
+DOWNLOAD_SUPPORT_LIBS="true"
+
+# =============================================================================
+# DOWNLOAD OPTIONS
+# =============================================================================
+# Number of parallel downloads
+PARALLEL_DOWNLOADS="4"
+
+# Verify checksums (recommended)
+VERIFY_CHECKSUMS="true"
+
+# Resume interrupted downloads
+RESUME_DOWNLOADS="true"
+
+# =============================================================================
+# STORAGE
+# =============================================================================
+# Base download directory (relative to project root)
+DOWNLOAD_DIR="downloads"
+
+# Output package name
+OUTPUT_PACKAGE="android-studio-offline-$(date +%Y%m%d).tar.gz"

@@ -1,0 +1,13 @@
+# Gradle Versions to Download
+# One version per line
+# Check your project's gradle/wrapper/gradle-wrapper.properties for required versions
+
+7.4.2
+7.5
+7.6
+8.0
+8.1
+8.2
+8.3
+8.4
+8.5

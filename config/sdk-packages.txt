@@ -1,0 +1,54 @@
+# Android SDK Packages to Install
+# Format: One package per line
+# Comments start with #
+# Use 'sdkmanager --list' to see all available packages
+
+# Platform Tools (adb, fastboot, etc.)
+platform-tools
+
+# Build Tools - Multiple versions for compatibility
+build-tools;33.0.2
+build-tools;34.0.0
+
+# Android Platforms (API Levels)
+platforms;android-33
+platforms;android-34
+
+# SDK Tools
+emulator
+tools
+
+# Command Line Tools
+cmdline-tools;latest
+
+# CMake for NDK builds
+cmake;3.22.1
+
+# NDK (Native Development Kit)
+ndk;25.2.9519653
+
+# System Images for Emulator
+system-images;android-33;google_apis;x86_64
+system-images;android-34;google_apis;x86_64
+
+# Google APIs
+add-ons;addon-google_apis-google-24
+
+# Google Play Services
+extras;google;google_play_services
+extras;google;m2repository
+extras;android;m2repository
+
+# Android Support Repository
+extras;android;support
+
+# Google USB Driver (Windows only)
+# extras;google;usb_driver
+
+# Intel x86 Emulator Accelerator (HAXM) - if needed
+# extras;intel;Hardware_Accelerated_Execution_Manager
+
+# Additional useful packages
+# sources;android-33
+# sources;android-34
+# docs

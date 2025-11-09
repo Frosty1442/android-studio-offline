@@ -1,0 +1,55 @@
+MIT License
+
+Copyright (c) 2025 Android Studio Offline Installer Contributors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+================================================================================
+
+THIRD-PARTY SOFTWARE NOTICES AND INFORMATION
+
+This repository provides scripts and documentation for downloading and installing
+third-party software components. Each component has its own license:
+
+1. Android Studio
+   License: https://developer.android.com/studio/terms
+   Copyright: Google LLC
+
+2. Android SDK
+   License: https://developer.android.com/studio/terms
+   Copyright: Google LLC
+
+3. Gradle
+   License: Apache License 2.0
+   Copyright: Gradle Inc.
+
+4. OpenJDK / Eclipse Temurin
+   License: GPL v2 with Classpath Exception
+   Copyright: OpenJDK Contributors / Eclipse Foundation
+
+5. Maven Dependencies
+   Each dependency has its own license. Check individual packages.
+
+By downloading and using these components, you agree to their respective licenses
+and terms of service. This repository's scripts (MIT licensed) do not override or
+modify the licenses of the downloaded components.
+
+DISCLAIMER: This is an unofficial tool. It is not affiliated with, endorsed by,
+or supported by Google, Gradle Inc., or any other third-party software vendors.
+Use at your own risk.
