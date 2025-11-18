@@ -5,12 +5,14 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"syscall"
 
 	"github.com/Frosty1442/android-studio-offline/internal/config"
 	"github.com/Frosty1442/android-studio-offline/internal/download"
 	"github.com/Frosty1442/android-studio-offline/internal/install"
 	"github.com/Frosty1442/android-studio-offline/internal/ui"
+	"github.com/Frosty1442/android-studio-offline/internal/util"
 	"github.com/spf13/cobra"
 )
 
@@ -129,6 +131,29 @@ func runDownload(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("failed to download Gradle: %w", err)
 	}
 
+	// Download SDK packages
+	logger.Info("")
+	if err := dl.DownloadSDKPackages(ctx, cfg); err != nil {
+		logger.Warning("SDK packages download had errors: %v", err)
+		logger.Info("Some SDK packages may be missing, but continuing...")
+	}
+
+	// Download Maven dependencies
+	logger.Info("")
+	if err := dl.DownloadMavenDependencies(ctx, cfg); err != nil {
+		logger.Warning("Maven dependencies download had errors: %v", err)
+	}
+
+	// Download Android Gradle Plugin
+	if err := dl.DownloadAndroidGradlePlugin(ctx, cfg); err != nil {
+		logger.Warning("AGP download had errors: %v", err)
+	}
+
+	// Download Kotlin Gradle Plugin
+	if err := dl.DownloadKotlinGradlePlugin(ctx, cfg); err != nil {
+		logger.Warning("Kotlin plugin download had errors: %v", err)
+	}
+
 	fmt.Println()
 	logger.Success("All downloads completed successfully!")
 	logger.Info("Next step: Run 'android-offline package' to create installation package")
@@ -163,15 +188,20 @@ func runInstall(cmd *cobra.Command, args []string) error {
 	}
 
 	logger.Info("Starting installation...")
+	fmt.Println()
 
-	installer := install.NewInstaller(logger)
-	if err := installer.Install(cfg); err != nil {
+	fullInstaller := install.NewFullInstaller(logger, cfg)
+	if err := fullInstaller.Install(); err != nil {
 		return fmt.Errorf("installation failed: %w", err)
 	}
 
+	fmt.Println()
 	logger.Success("Installation completed successfully!")
 	logger.Info("Android Studio installed to: %s", cfg.InstallDir)
-	logger.Info("Start Android Studio: %s/android-studio/bin/studio.sh", cfg.InstallDir)
+
+	startCmd := filepath.Join(cfg.InstallDir, "android-studio", "bin", "studio.sh")
+	logger.Info("Start Android Studio: %s", startCmd)
+	logger.Info("Or use the desktop launcher (Linux only)")
 
 	return nil
 }
@@ -200,17 +230,111 @@ func runInit(cmd *cobra.Command, args []string) error {
 }
 
 func runVerify(cmd *cobra.Command, args []string) error {
-	_, err := loadConfig()
+	cfg, err := loadConfig()
 	if err != nil {
 		return err
 	}
 
 	logger.Info("Verifying downloaded components...")
+	fmt.Println()
 
-	// TODO: Implement verification logic
-	logger.Info("Verification not yet implemented")
+	verified := 0
+	missing := 0
+
+	// Check Android Studio
+	studioDir := filepath.Join(cfg.DownloadDir, "android-studio")
+	if util.FileExists(studioDir) && hasFiles(studioDir) {
+		logger.Success("Android Studio: Found")
+		verified++
+	} else {
+		logger.Error("Android Studio: Missing")
+		missing++
+	}
+
+	// Check JDK
+	if cfg.AndroidStudio.DownloadJDK {
+		jdkDir := filepath.Join(cfg.DownloadDir, "jdk")
+		if util.FileExists(jdkDir) && hasFiles(jdkDir) {
+			logger.Success("JDK: Found")
+			verified++
+		} else {
+			logger.Error("JDK: Missing")
+			missing++
+		}
+	}
+
+	// Check SDK
+	sdkDir := filepath.Join(cfg.DownloadDir, "sdk")
+	if util.FileExists(sdkDir) && hasFiles(sdkDir) {
+		logger.Success("SDK Tools: Found")
+		verified++
+	} else {
+		logger.Error("SDK Tools: Missing")
+		missing++
+	}
+
+	// Check Gradle
+	gradleDir := filepath.Join(cfg.DownloadDir, "gradle", "distributions")
+	if util.FileExists(gradleDir) && hasFiles(gradleDir) {
+		count := countFiles(gradleDir)
+		logger.Success("Gradle: Found (%d files)", count)
+		verified++
+	} else {
+		logger.Error("Gradle: Missing")
+		missing++
+	}
+
+	// Check dependencies
+	if cfg.Dependencies.DownloadMaven {
+		depsDir := filepath.Join(cfg.DownloadDir, "dependencies")
+		if util.FileExists(depsDir) && hasFiles(depsDir) {
+			logger.Success("Dependencies: Found")
+			verified++
+		} else {
+			logger.Warning("Dependencies: Missing (optional)")
+		}
+	}
+
+	// Calculate total size
+	totalSize, err := util.DirSize(cfg.DownloadDir)
+	if err == nil {
+		logger.Info("Total download size: %s", formatBytes(totalSize))
+	}
+
+	fmt.Println()
+	if missing > 0 {
+		logger.Warning("Verification: %d verified, %d missing", verified, missing)
+		logger.Info("Run 'android-offline download' to download missing components")
+		return fmt.Errorf("missing components")
+	}
+
+	logger.Success("Verification complete: All components present!")
+	logger.Info("Ready to create package with 'android-offline package'")
 
 	return nil
+}
+
+func hasFiles(dir string) bool {
+	entries, err := os.ReadDir(dir)
+	return err == nil && len(entries) > 0
+}
+
+func countFiles(dir string) int {
+	entries, _ := os.ReadDir(dir)
+	return len(entries)
+}
+
+func formatBytes(bytes int64) string {
+	const unit = 1024
+	if bytes < unit {
+		return fmt.Sprintf("%d B", bytes)
+	}
+	div, exp := int64(unit), 0
+	for n := bytes / unit; n >= unit; n /= unit {
+		div *= unit
+		exp++
+	}
+	return fmt.Sprintf("%.1f %cB", float64(bytes)/float64(div), "KMGTPE"[exp])
 }
 
 func loadConfig() (*config.Config, error) {

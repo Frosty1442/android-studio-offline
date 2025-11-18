@@ -11,6 +11,12 @@ Cross-platform CLI tool for creating and deploying offline Android Studio instal
 💾 **Resume Support**: Interrupted downloads can resume
 🎯 **Simple**: Clean CLI interface with colored output
 
+## 📖 Documentation
+
+- **[USAGE-GUIDE.md](USAGE-GUIDE.md)** - Complete step-by-step guide (RECOMMENDED!)
+- **[GO-README.md](GO-README.md)** - This file (technical reference)
+- **[docs/](docs/)** - Additional documentation
+
 ## Quick Start
 
 ### Installation
