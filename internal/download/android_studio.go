@@ -43,7 +43,7 @@ func (d *Downloader) DownloadAndroidStudio(ctx context.Context, cfg *config.Conf
 	}
 
 	d.logger.Info("Downloading from: %s", url)
-	if err := d.DownloadFile(ctx, url, destPath, cfg.Options.ResumeDownloads); err != nil {
+	if err := d.DownloadAndVerify(ctx, url, destPath, cfg.Options.ResumeDownloads, cfg.Options.VerifyChecksums); err != nil {
 		return fmt.Errorf("failed to download Android Studio: %w", err)
 	}
 
@@ -91,7 +91,7 @@ func (d *Downloader) DownloadJDK(ctx context.Context, cfg *config.Config) error 
 	}
 
 	d.logger.Info("Downloading from: %s", url)
-	if err := d.DownloadFile(ctx, url, destPath, cfg.Options.ResumeDownloads); err != nil {
+	if err := d.DownloadAndVerify(ctx, url, destPath, cfg.Options.ResumeDownloads, cfg.Options.VerifyChecksums); err != nil {
 		return fmt.Errorf("failed to download JDK: %w", err)
 	}
 
@@ -127,7 +127,7 @@ func (d *Downloader) DownloadSDKCommandLineTools(ctx context.Context, cfg *confi
 	}
 
 	d.logger.Info("Downloading from: %s", url)
-	if err := d.DownloadFile(ctx, url, destPath, cfg.Options.ResumeDownloads); err != nil {
+	if err := d.DownloadAndVerify(ctx, url, destPath, cfg.Options.ResumeDownloads, cfg.Options.VerifyChecksums); err != nil {
 		return fmt.Errorf("failed to download SDK tools: %w", err)
 	}
 
@@ -161,7 +161,7 @@ func (d *Downloader) DownloadPlatformTools(ctx context.Context, cfg *config.Conf
 		return nil
 	}
 
-	if err := d.DownloadFile(ctx, url, destPath, cfg.Options.ResumeDownloads); err != nil {
+	if err := d.DownloadAndVerify(ctx, url, destPath, cfg.Options.ResumeDownloads, cfg.Options.VerifyChecksums); err != nil {
 		return fmt.Errorf("failed to download platform tools: %w", err)
 	}
 

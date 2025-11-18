@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 	"time"
 
@@ -212,4 +213,54 @@ func (d *Downloader) GetFileSize(ctx context.Context, url string) (int64, error)
 	defer resp.Body.Close()
 
 	return resp.ContentLength, nil
+}
+
+// DownloadAndVerify downloads a file and optionally verifies its checksum
+func (d *Downloader) DownloadAndVerify(ctx context.Context, url, destPath string, resume, verifyChecksum bool) error {
+	// Download the file
+	if err := d.DownloadFile(ctx, url, destPath, resume); err != nil {
+		return err
+	}
+
+	// Download and verify checksum if enabled
+	if verifyChecksum {
+		checksumURL := url + ".sha256"
+		checksumPath := destPath + ".sha256"
+
+		// Try to download checksum file (not all files have checksums)
+		if err := d.DownloadFile(ctx, checksumURL, checksumPath, false); err != nil {
+			d.logger.Debug("No checksum available for %s", filepath.Base(destPath))
+			return nil
+		}
+
+		// Read expected checksum
+		checksumData, err := os.ReadFile(checksumPath)
+		if err != nil {
+			d.logger.Warning("Failed to read checksum file: %v", err)
+			return nil
+		}
+
+		expectedHash := strings.TrimSpace(string(checksumData))
+		// Checksums often have filename after hash (format: "hash  filename")
+		// Just take the first 64 characters (SHA256 hash length) and trim whitespace
+		if len(expectedHash) > 64 {
+			expectedHash = strings.TrimSpace(expectedHash[:64])
+		}
+
+		// Verify checksum
+		d.logger.Debug("Verifying checksum for %s", filepath.Base(destPath))
+		valid, err := VerifyChecksum(destPath, expectedHash)
+		if err != nil {
+			d.logger.Warning("Failed to verify checksum: %v", err)
+			return nil
+		}
+
+		if !valid {
+			return fmt.Errorf("checksum verification failed for %s", filepath.Base(destPath))
+		}
+
+		d.logger.Debug("Checksum verified for %s", filepath.Base(destPath))
+	}
+
+	return nil
 }
