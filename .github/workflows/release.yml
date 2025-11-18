@@ -1,0 +1,76 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.21'
+
+    - name: Build all platforms
+      run: make build-all
+
+    - name: Create release packages
+      run: make release
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        draft: false
+        prerelease: false
+
+    - name: Upload Linux AMD64
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./releases/android-offline-${{ github.ref_name }}-linux-amd64.tar.gz
+        asset_name: android-offline-linux-amd64.tar.gz
+        asset_content_type: application/gzip
+
+    - name: Upload Darwin AMD64
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./releases/android-offline-${{ github.ref_name }}-darwin-amd64.tar.gz
+        asset_name: android-offline-darwin-amd64.tar.gz
+        asset_content_type: application/gzip
+
+    - name: Upload Darwin ARM64
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./releases/android-offline-${{ github.ref_name }}-darwin-arm64.tar.gz
+        asset_name: android-offline-darwin-arm64.tar.gz
+        asset_content_type: application/gzip
+
+    - name: Upload Windows AMD64
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./releases/android-offline-${{ github.ref_name }}-windows-amd64.tar.gz
+        asset_name: android-offline-windows-amd64.tar.gz
+        asset_content_type: application/gzip

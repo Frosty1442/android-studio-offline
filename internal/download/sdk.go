@@ -1,8 +1,10 @@
 package download
 
 import (
+	"archive/zip"
 	"context"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -91,7 +93,7 @@ func (d *Downloader) DownloadSDKPackages(ctx context.Context, cfg *config.Config
 }
 
 func (d *Downloader) extractSDKTools(cfg *config.Config) error {
-	// Find SDK tools zip
+	// Import the util package for ExtractZip
 	sdkDir := filepath.Join(cfg.DownloadDir, "sdk")
 	sdkRoot := filepath.Join(sdkDir, "android-sdk")
 
@@ -118,9 +120,12 @@ func (d *Downloader) extractSDKTools(cfg *config.Config) error {
 		return err
 	}
 
-	// Extract to temporary location
+	// Extract to temporary location using pure Go
 	tempDir := filepath.Join(cmdlineDir, "temp")
-	if err := extractZip(zipFile, tempDir); err != nil {
+
+	// We need to import util package - for now inline the extraction
+	// This will be cleaned up with proper import
+	if err := extractZipPure(zipFile, tempDir); err != nil {
 		return fmt.Errorf("failed to extract SDK tools: %w", err)
 	}
 
@@ -173,15 +178,49 @@ func (d *Downloader) installSDKPackage(sdkManager, sdkRoot, packageName string) 
 	return nil
 }
 
-// extractZip extracts a zip file to destination
-func extractZip(zipPath, destPath string) error {
-	if err := os.MkdirAll(destPath, 0755); err != nil {
-		return err
+// extractZipPure extracts a zip file using pure Go (no unzip dependency)
+func extractZipPure(zipPath, destPath string) error {
+	reader, err := zip.OpenReader(zipPath)
+	if err != nil {
+		return fmt.Errorf("failed to open zip: %w", err)
 	}
+	defer reader.Close()
 
-	cmd := exec.Command("unzip", "-q", "-o", zipPath, "-d", destPath)
-	if err := cmd.Run(); err != nil {
-		return fmt.Errorf("unzip failed: %w", err)
+	for _, file := range reader.File {
+		target := filepath.Join(destPath, file.Name)
+
+		// Security: prevent zip slip
+		if !strings.HasPrefix(filepath.Clean(target), filepath.Clean(destPath)) {
+			continue
+		}
+
+		if file.FileInfo().IsDir() {
+			os.MkdirAll(target, 0755)
+			continue
+		}
+
+		if err := os.MkdirAll(filepath.Dir(target), 0755); err != nil {
+			return err
+		}
+
+		outFile, err := os.OpenFile(target, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, file.Mode())
+		if err != nil {
+			return err
+		}
+
+		rc, err := file.Open()
+		if err != nil {
+			outFile.Close()
+			return err
+		}
+
+		_, err = io.Copy(outFile, rc)
+		rc.Close()
+		outFile.Close()
+
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil

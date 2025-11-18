@@ -47,7 +47,7 @@ func (fi *FullInstaller) Install() error {
 	}
 
 	for i, step := range steps {
-		fi.logger.Step(i+1, len(steps), step.name)
+		fi.logger.Step(i+1, len(steps), "%s", step.name)
 		if err := step.fn(); err != nil {
 			return fmt.Errorf("failed at step '%s': %w", step.name, err)
 		}
@@ -206,19 +206,17 @@ func (fi *FullInstaller) configureEnvironment() error {
 		return err
 	}
 
-	// Determine shell config file
+	// Handle Windows separately
+	if runtime.GOOS == "windows" {
+		return fi.configureWindowsEnvironment()
+	}
+
+	// Determine shell config file for Unix-like systems
 	var rcFile string
-	switch runtime.GOOS {
-	case "darwin", "linux":
-		// Check for zsh or bash
-		if util.FileExists(filepath.Join(homeDir, ".zshrc")) {
-			rcFile = filepath.Join(homeDir, ".zshrc")
-		} else {
-			rcFile = filepath.Join(homeDir, ".bashrc")
-		}
-	case "windows":
-		fi.logger.Info("Windows: Set environment variables via System Properties")
-		return nil
+	if util.FileExists(filepath.Join(homeDir, ".zshrc")) {
+		rcFile = filepath.Join(homeDir, ".zshrc")
+	} else {
+		rcFile = filepath.Join(homeDir, ".bashrc")
 	}
 
 	// Backup existing file

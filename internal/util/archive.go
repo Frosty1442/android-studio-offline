@@ -69,7 +69,7 @@ func ExtractTarGz(archivePath, destPath string) error {
 	return nil
 }
 
-// ExtractZip extracts a zip archive to destination
+// ExtractZip extracts a zip archive to destination using pure Go
 func ExtractZip(archivePath, destPath string) error {
 	reader, err := zip.OpenReader(archivePath)
 	if err != nil {
@@ -78,28 +78,32 @@ func ExtractZip(archivePath, destPath string) error {
 	defer reader.Close()
 
 	for _, file := range reader.File {
+		// Sanitize file path to prevent zip slip
 		target := filepath.Join(destPath, file.Name)
+		if !strings.HasPrefix(filepath.Clean(target), filepath.Clean(destPath)) {
+			return fmt.Errorf("illegal file path: %s", file.Name)
+		}
 
 		if file.FileInfo().IsDir() {
 			if err := os.MkdirAll(target, 0755); err != nil {
-				return err
+				return fmt.Errorf("failed to create directory: %w", err)
 			}
 			continue
 		}
 
 		if err := os.MkdirAll(filepath.Dir(target), 0755); err != nil {
-			return err
+			return fmt.Errorf("failed to create parent directory: %w", err)
 		}
 
-		outFile, err := os.Create(target)
+		outFile, err := os.OpenFile(target, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, file.Mode())
 		if err != nil {
-			return err
+			return fmt.Errorf("failed to create file: %w", err)
 		}
 
 		rc, err := file.Open()
 		if err != nil {
 			outFile.Close()
-			return err
+			return fmt.Errorf("failed to open zip entry: %w", err)
 		}
 
 		_, err = io.Copy(outFile, rc)
@@ -107,12 +111,7 @@ func ExtractZip(archivePath, destPath string) error {
 		outFile.Close()
 
 		if err != nil {
-			return err
-		}
-
-		// Set permissions
-		if err := os.Chmod(target, file.Mode()); err != nil {
-			return err
+			return fmt.Errorf("failed to extract file: %w", err)
 		}
 	}
 
