@@ -1,0 +1,112 @@
+# Android Studio Offline Installer Configuration
+# Edit this file to customize what components to download
+
+# Platform: linux, darwin, darwin-arm, windows
+platform: linux
+
+# Where to download files (on internet-connected machine)
+download_dir: downloads
+
+# Where to install on target machine
+install_dir: /opt/android-offline
+
+# Android Studio Configuration
+android_studio:
+  version: "2024.2.1.10"  # Check https://developer.android.com/studio for latest
+  download_jdk: true      # Download standalone JDK (Android Studio includes one)
+  jdk_version: "17"       # JDK version (17 recommended)
+
+# Android SDK Configuration
+sdk:
+  tools_version: "11076708"  # SDK command-line tools version
+
+  # Android API levels to download
+  api_levels:
+    - 33  # Android 13
+    - 34  # Android 14
+
+  # Build tools versions
+  build_tools:
+    - "33.0.2"
+    - "34.0.0"
+
+  # System images for emulator (format: system-images;android-API;variant;abi)
+  # Variants: google_apis, google_apis_playstore, default
+  # ABIs: x86_64 (fast on most PCs), arm64-v8a
+  system_images:
+    - "system-images;android-33;google_apis;x86_64"
+    - "system-images;android-34;google_apis;x86_64"
+
+  # Native Development Kit
+  download_ndk: true
+  ndk_version: "25.2.9519653"
+
+  # CMake for NDK builds
+  download_cmake: true
+
+  # Additional SDK packages
+  extra_packages:
+    - "platform-tools"
+    - "emulator"
+    - "extras;google;google_play_services"
+    - "extras;google;m2repository"
+    - "extras;android;m2repository"
+
+# Gradle Configuration
+gradle:
+  versions:
+    - "7.6"   # Stable LTS
+    - "8.0"   # For newer projects
+    - "8.4"   # Latest stable
+
+# Maven Dependencies
+dependencies:
+  download_maven: true
+
+  # Common Android libraries to pre-download
+  # Format: group:artifact:version
+  common_libs:
+    # AndroidX Core
+    - "androidx.core:core-ktx:1.12.0"
+    - "androidx.appcompat:appcompat:1.6.1"
+    - "androidx.constraintlayout:constraintlayout:2.1.4"
+
+    # Material Design
+    - "com.google.android.material:material:1.11.0"
+
+    # Lifecycle
+    - "androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2"
+    - "androidx.lifecycle:lifecycle-livedata-ktx:2.6.2"
+
+    # Navigation
+    - "androidx.navigation:navigation-fragment-ktx:2.7.5"
+    - "androidx.navigation:navigation-ui-ktx:2.7.5"
+
+    # Room Database
+    - "androidx.room:room-runtime:2.6.1"
+    - "androidx.room:room-ktx:2.6.1"
+
+    # Kotlin
+    - "org.jetbrains.kotlin:kotlin-stdlib:1.9.21"
+    - "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3"
+    - "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3"
+
+    # Networking
+    - "com.squareup.retrofit2:retrofit:2.9.0"
+    - "com.squareup.okhttp3:okhttp:4.12.0"
+
+    # Testing
+    - "junit:junit:4.13.2"
+    - "androidx.test.ext:junit:1.1.5"
+    - "androidx.test.espresso:espresso-core:3.5.1"
+
+  # Optional: Path to sample Android project
+  # If provided, all its dependencies will be pre-downloaded
+  sample_project: ""
+
+# Download Options
+options:
+  parallel_downloads: 4      # Number of concurrent downloads
+  verify_checksums: true     # Verify file integrity
+  resume_downloads: true     # Resume interrupted downloads
+  verbose: false             # Verbose logging

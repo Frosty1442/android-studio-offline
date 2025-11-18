@@ -1,0 +1,43 @@
+platform: linux
+download_dir: downloads
+install_dir: /opt/android-offline
+android_studio:
+    version: 2024.2.1.10
+    download_jdk: true
+    jdk_version: "17"
+sdk:
+    tools_version: "11076708"
+    api_levels:
+        - 33
+        - 34
+    build_tools:
+        - 33.0.2
+        - 34.0.0
+    system_images:
+        - system-images;android-33;google_apis;x86_64
+        - system-images;android-34;google_apis;x86_64
+    download_ndk: true
+    ndk_version: 25.2.9519653
+    download_cmake: true
+    extra_packages:
+        - platform-tools
+        - emulator
+        - extras;google;google_play_services
+gradle:
+    versions:
+        - "7.6"
+        - "8.0"
+        - "8.4"
+dependencies:
+    download_maven: true
+    common_libs:
+        - androidx.core:core-ktx:1.12.0
+        - androidx.appcompat:appcompat:1.6.1
+        - com.google.android.material:material:1.11.0
+        - androidx.constraintlayout:constraintlayout:2.1.4
+    sample_project: ""
+options:
+    parallel_downloads: 4
+    verify_checksums: true
+    resume_downloads: true
+    verbose: false

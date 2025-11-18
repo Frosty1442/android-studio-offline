@@ -2,9 +2,49 @@
 
 A comprehensive solution for creating a fully offline Android Studio development environment that can be deployed on machines without internet access.
 
+## 🚀 **NEW: Cross-Platform Go Edition Available!**
+
+This project now includes a **Go-based CLI tool** that provides a superior cross-platform experience:
+
+- ✅ **Single binary** for Windows, Linux, and macOS (no bash/WSL required!)
+- ✅ **Real-time progress bars** and colored output
+- ✅ **Parallel downloads** for faster performance
+- ✅ **Cleaner interface** and better error handling
+
+**Quick Start with Go version:**
+```bash
+# Download pre-built binary or build from source
+make build
+
+# Initialize configuration
+./bin/android-offline init
+
+# Download components
+./bin/android-offline download
+
+# Create package
+./bin/android-offline package
+```
+
+👉 **See [GO-README.md](GO-README.md) for complete Go version documentation**
+
+---
+
 ## Overview
 
-This repository provides scripts and processes to:
+This repository provides **two implementations**:
+
+### **1. Go CLI Tool** (Recommended - Cross-platform)
+- Single executable for all platforms
+- Modern CLI interface with progress bars
+- See [GO-README.md](GO-README.md)
+
+### **2. Bash Scripts** (Original - Linux/macOS/WSL)
+- Shell scripts for Linux and macOS
+- Works on Windows via WSL
+- See documentation below
+
+Both versions provide the same functionality:
 - Download Android Studio and all required components
 - Package the Android SDK, build tools, and platform tools
 - Collect Gradle distributions and dependencies
@@ -34,6 +74,30 @@ This repository provides scripts and processes to:
 - **JCenter/MavenCentral Artifacts**
 
 ## Quick Start
+
+### Go Version (Recommended)
+
+```bash
+# 1. Build or download binary
+make build
+# Or: wget https://github.com/.../android-offline-linux-amd64.tar.gz
+
+# 2. Initialize
+./bin/android-offline init
+
+# 3. Download (edit config.yaml first if needed)
+./bin/android-offline download
+
+# 4. Package
+./bin/android-offline package
+
+# 5. Transfer to offline machine and install
+./bin/android-offline install
+```
+
+See [GO-README.md](GO-README.md) for detailed instructions.
+
+### Bash Scripts Version
 
 ### Phase 1: Download Components (On Internet-Connected Machine)
 
