@@ -96,6 +96,12 @@ func (d *Downloader) downloadGradleVersion(ctx context.Context, cfg *config.Conf
 func (d *Downloader) downloadGradleWrapper(ctx context.Context, cfg *config.Config) error {
 	d.logger.Info("Downloading Gradle wrapper files")
 
+	// Safety check - need at least one Gradle version for wrapper scripts
+	if len(cfg.Gradle.Versions) == 0 {
+		d.logger.Warning("No Gradle versions specified, skipping wrapper")
+		return nil
+	}
+
 	wrapperDir := filepath.Join(cfg.DownloadDir, "gradle", "wrapper")
 
 	// Wrapper files to download from GitHub
