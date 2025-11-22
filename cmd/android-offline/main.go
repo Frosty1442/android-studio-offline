@@ -98,6 +98,12 @@ func runDownload(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
+	// Validate configuration before downloading
+	if err := cfg.Validate(); err != nil {
+		logger.Error("Configuration validation failed")
+		return fmt.Errorf("invalid configuration: %w", err)
+	}
+
 	logger.Info("Starting download process")
 	logger.Info("Platform: %s", cfg.Platform)
 	logger.Info("Download directory: %s", cfg.DownloadDir)
@@ -185,6 +191,12 @@ func runInstall(cmd *cobra.Command, args []string) error {
 	cfg, err := loadConfig()
 	if err != nil {
 		return err
+	}
+
+	// Validate configuration before installing
+	if err := cfg.Validate(); err != nil {
+		logger.Error("Configuration validation failed")
+		return fmt.Errorf("invalid configuration: %w", err)
 	}
 
 	logger.Info("Starting installation...")
